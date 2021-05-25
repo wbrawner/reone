@@ -17,6 +17,8 @@
 
 #include "inventory.h"
 
+#include <boost/format.hpp>
+
 #include "../../game.h"
 
 #include "../colorutil.h"
@@ -44,14 +46,22 @@ void InventoryMenu::load() {
     hideControl("BTN_CHARLEFT");
     hideControl("BTN_CHARRIGHT");
     hideControl("LBL_CREDITS_VALUE");
-    hideControl("LBL_VIT");
-    hideControl("LBL_DEF");
 
     disableControl("BTN_USEITEM");
     disableControl("BTN_QUESTITEMS");
 
     setControlFocusable("BTN_CHANGE1", false);
     setControlFocusable("BTN_CHANGE2", false);
+}
+
+void InventoryMenu::update() {
+    refreshPortraits();
+    auto partyLeader(_game->services().party().getLeader());
+
+    string vitalityString(str(boost::format("%d/\n%d") % partyLeader->currentHitPoints() % partyLeader->hitPoints()));
+    setControlText("LBL_VIT", vitalityString);
+
+    setControlText("LBL_DEF", to_string(partyLeader->getDefense()));
 }
 
 void InventoryMenu::refreshPortraits() {

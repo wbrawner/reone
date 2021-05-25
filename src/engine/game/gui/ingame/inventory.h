@@ -31,6 +31,8 @@ public:
 
     void refreshPortraits();
 
+    void update();
+
 private:
     void onClick(const std::string &control) override;
 };

@@ -196,7 +196,7 @@ void InGameMenu::updateTabButtons() {
 }
 
 void InGameMenu::openInventory() {
-    _inventory->refreshPortraits();
+    _inventory->update();
     changeTab(Tab::Inventory);
 }
 
