@@ -43,6 +43,7 @@ private:
         std::map<uint16_t, std::pair<uint16_t, float>> fromToDistance;
         std::set<uint16_t> visited;
         std::queue<uint16_t> queue;
+        // std::priority_queue<uint16_t, std::vector<uint16_t>, std::greater<uint16_t>> queue;
     };
 
     std::vector<glm::vec3> _vertices;

@@ -16,6 +16,7 @@
  */
 
 #include "pathfinder.h"
+#include "../common/log.h"
 
 using namespace std;
 
@@ -26,6 +27,12 @@ namespace reone {
 namespace game {
 
 Pathfinder::Edge::Edge(uint16_t toIndex, float length) : toIndex(toIndex), length(length) {
+}
+
+void logTime(std::chrono::_V2::system_clock::time_point start) {
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+    debug("Found path in " + to_string(duration.count()) + "ms");
 }
 
 void Pathfinder::load(const vector<Path::Point> &points, const unordered_map<int, float> &pointZ) {
@@ -45,6 +52,7 @@ void Pathfinder::load(const vector<Path::Point> &points, const unordered_map<int
 }
 
 const vector<glm::vec3> Pathfinder::findPath(const glm::vec3 &from, const glm::vec3 &to) const {
+    auto start = std::chrono::high_resolution_clock::now();
     if (_vertices.empty()) {
         return vector<glm::vec3> { from, to };
     }
@@ -58,10 +66,20 @@ const vector<glm::vec3> Pathfinder::findPath(const glm::vec3 &from, const glm::v
     ctx.fromToDistance = { { fromIdx, make_pair(fromIdx, 0.0f) } };
     ctx.queue.push(fromIdx);
 
+    bool logged = false;
     while (!ctx.queue.empty()) {
         uint16_t idx = ctx.queue.front();
+        // uint16_t idx = ctx.queue.top();
         ctx.queue.pop();
         visit(idx, ctx);
+        if (idx == toIdx) {
+            debug("Found path target, would break early.");
+            if (!logged) {
+                logTime(start);
+                logged = true;
+            }
+            // break;
+        }
     }
     if (ctx.fromToDistance.find(toIdx) == ctx.fromToDistance.end()) {
         return vector<glm::vec3> { from, to };
@@ -78,6 +96,7 @@ const vector<glm::vec3> Pathfinder::findPath(const glm::vec3 &from, const glm::v
         idx = pair.first;
     }
 
+    logTime(start);
     return move(path);
 }
 
